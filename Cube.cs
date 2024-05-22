@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,18 +16,23 @@ public class Cube : MonoBehaviour
     public int upperBound;
     public int defaultValueY;
 
+    private void OnValidate()
+    {
+        if (_colors.Count == 0)
+        {
+            throw new System.InvalidOperationException("Colors list is empty.");
+        }
+    }
+
     private void Start()
     {
         _renderer = GetComponent<Renderer>();
 
-        if (_colors.Count == 0)
-        {
-            throw new InvalidOperationException("Colors list is empty.");
-        }
-
         _renderer.material.color = _colors[_initialColorIndex];
         _initialPosition = transform.position;
+        transform.position = new Vector3(Random.Range(lowerBound, upperBound), defaultValueY, Random.Range(lowerBound, upperBound));
     }
+
 
     private void OnEnable()
     {
@@ -42,15 +46,14 @@ public class Cube : MonoBehaviour
             _canInteract = false;
             StartCoroutine(DelayRelease());
 
-            int randomIndex = UnityEngine.Random.Range(0, _colors.Count);
+            int randomIndex = Random.Range(0, _colors.Count);
             _renderer.material.color = _colors[randomIndex];
         }
     }
 
     public void Deactivate()
     {
-        transform.position = _initialPosition;
-        transform.position = new Vector3(UnityEngine.Random.Range(lowerBound, upperBound), defaultValueY, UnityEngine.Random.Range(lowerBound, upperBound));
+        transform.position = new Vector3(Random.Range(lowerBound, upperBound), defaultValueY, Random.Range(lowerBound, upperBound));
     }
 
     public void Activate()
@@ -62,7 +65,7 @@ public class Cube : MonoBehaviour
     {
         float minDelay = 2f;
         float maxDelay = 6f;
-        float delay = UnityEngine.Random.Range(minDelay, maxDelay);
+        float delay = Random.Range(minDelay, maxDelay);
         yield return new WaitForSeconds(delay);
         Deactivate();
         Activate();
